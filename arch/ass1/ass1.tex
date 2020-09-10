@@ -1,0 +1,100 @@
+
+\documentclass[12pt,letterpaper]{article}
+\usepackage{preamble}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{enumitem}
+
+
+\newcommand\course{CSE 611}
+\newcommand\hwnumber{1}
+\newcommand\userID{Max Williams}
+
+\newcommand{\tf}[2]{\frac{\text{#1}}{\text{#2}}}
+
+\begin{document}
+
+\section*{Problem 1}
+
+\textit{Architecture} or \textit{instruction set architecture} refers to the architecture as seen by
+the programmer or compiler. This consists of the registers, instructions and their operands, and
+other details as they directly affect computation. The architecture is a logical abstraction of the
+\textit{microarchitecture} which includes details which affect performance but (ideally) do not affect
+the result of the computation.
+
+The line between these two can be blurred if the programmer is aware of the
+microarchitecture and attempts to write code which causes microarchitecture level optimization, such
+as structuring code so that the branch predictor works more accurately or read-after-writes can be
+done in zero steps by reusing data. The line can be pathologically blurred in the other direction if
+bugs in the microarchitecture cause a divergence between the expected behavior as per the
+architecture and the actual behavior of the system, such as using branch prediction and cache
+latency to take data from illegal location as in the Specter and Meltdown exploits.
+
+\section*{Problem 2}
+
+\begin{multline*}
+0.15\ \text{stores} \times 1 \tf{cycles}{store} 
++ 0.25\ \text{loads} \times 2 \tf{cycles}{load}\\
++ 0.2\ \text{branches} \times 4\tf{cycles}{branch} 
++ 0.4\ \text{integer ALUs} \times 1\tf{cycles}{integer ALU}\\ 
+=  1.85 \tf{cycles}{instruction}
+\end{multline*}
+
+\section*{Problem 3}
+
+\lstinputlisting[language=C]{p3.c}
+
+S3 and S1 create a RAW dependency (true dependency) on y.
+
+S1 and S4 create a WAW dependency (output dependency) on y.
+
+S1 and S2 create a WAR dependency (anti-dependency) on x.
+
+If S2 is not an atomic operation, then it creates a RAW hazard (true dependency) on x. The same is
+true of S4 for y. However, on a CISC architecture these can possibly be done with a single
+instruction using indirection and there would not be these hazards. 
+
+The looping (and branch at the end of the loop) are independent of the data, and each iteration is
+independent, so there is no concern over other dependencies created between the loop iterations.
+Hazards related to the loop variable `i'.
+
+\section*{Problem 4}
+
+\lstinputlisting[language=Ant]{a3.asm}
+
+\subsection*{Problem 4.1}
+
+Code segment \textit{(a)} has a true dependency, read after write. \lstinline{R1} is written to upon completion of the
+ADD instruction, and the \lstinline{LD} instruction depends on \lstinline{R1} for offsetting the address it loads from.
+Once \lstinline{R1} is written to, the \lstinline{LD} instruction is free to run without this hazard.
+
+Code segment \textit{(b)} has no dependencies. The first instruction reads \lstinline{R1} and
+\lstinline{R2} and writes \lstinline{R3}. The
+second reads \lstinline{R1} and \lstinline{R2} and writes to some location in memory. Thus only ``read after read'' takes
+place and there are no data hazards.
+
+Code segment \textit{(c)} has a potential output dependency. If \lstinline{7(R1)} and
+\lstinline{200(R7)} happen to point to the same
+location in memory, then that location is written to by the first instruction then the second. This
+is resolved once the first instruction has finished writing, then the second is free to (possibly)
+overwrite it.
+
+Code segment \textit{(d)} creates a branch hazard, and the \lstinline{ST} instruction cannot write to memory until it is
+known whether is \lstinline{BEZ} instruction is going to branch. This is because whether or not the
+\lstinline{ST}
+instruction is ran depends on the result of \lstinline{BEZ}. Thus the \lstinline{ST} must be delayed until after the
+branch is finished (possibly) writing to the instruction pointer.
+
+\subsection*{Problem 4.2}
+
+Code segment \textit{(a)} does not allow for out of order execution because the second line depends on the
+first. Code segment \textit{(b)} can be reordered without issue. Code segment \textit{(c)} can only be reordered if
+\lstinline{7(R1)} and \lstinline{200(R7)} happen to point to different locations. Code segment \textit{(d)} cannot be reordered
+because it is unknown whether the \lstinline{ST} instruction will be ran at all. Branch prediction can be used,
+for instance by caching the address the \lstinline{ST} instruction is going to use if it is expected to run.
+
+\end{document}
