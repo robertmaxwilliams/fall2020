@@ -62,17 +62,20 @@ int main() {
     INIT_TIMER;
 
 
+
+
     START_TIMER;
-    float c = plain_max_unroll_4(data, MANY);
-    STOP_TIMER("four");
+    float a = plain_max(data, MANY);
+    STOP_TIMER("plain");
 
     START_TIMER;
     float b = plain_max_unroll_2(data, MANY);
     STOP_TIMER("two");
 
     START_TIMER;
-    float a = plain_max(data, MANY);
-    STOP_TIMER("plain");
+    float c = plain_max_unroll_4(data, MANY);
+    STOP_TIMER("four");
+
     printf("%f %f %f\n", a, b, c);
     return 0;
 }

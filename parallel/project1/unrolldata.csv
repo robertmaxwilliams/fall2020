@@ -1,0 +1,91 @@
+is_flipped, otimization level, unroll amount, run, seconde
+not flipped, 0   , 1, 0, 1.729 
+not flipped, 0   , 2, 0, 1.58756
+not flipped, 0   , 4, 0, 1.57352
+not flipped, 0   , 1, 1, 1.55341
+not flipped, 0   , 2, 1, 1.52362
+not flipped, 0   , 4, 1, 1.63458
+not flipped, 0   , 1, 2, 1.63856
+not flipped, 0   , 2, 2, 1.50855
+not flipped, 0   , 4, 2, 1.43326
+not flipped, 1   , 1, 0, 0.350603
+not flipped, 1   , 2, 0, 0.197622
+not flipped, 1   , 4, 0, 0.157149
+not flipped, 1   , 1, 1, 0.340944
+not flipped, 1   , 2, 1, 0.19725
+not flipped, 1   , 4, 1, 0.153983
+not flipped, 1   , 1, 2, 0.357234
+not flipped, 1   , 2, 2, 0.203818
+not flipped, 1   , 4, 2, 0.143538
+not flipped, 2   , 1, 0, 0.356896
+not flipped, 2   , 2, 0, 0.216445
+not flipped, 2   , 4, 0, 0.193591
+not flipped, 2   , 1, 1, 0.349673
+not flipped, 2   , 2, 1, 0.202337
+not flipped, 2   , 4, 1, 0.140951
+not flipped, 2   , 1, 2, 0.354822
+not flipped, 2   , 2, 2, 0.202542
+not flipped, 2   , 4, 2, 0.150989
+not flipped, 3   , 1, 0, 0.350306
+not flipped, 3   , 2, 0, 0.195654
+not flipped, 3   , 4, 0, 0.153641
+not flipped, 3   , 1, 1, 0.347778
+not flipped, 3   , 2, 1, 0.202953
+not flipped, 3   , 4, 1, 0.16567
+not flipped, 3   , 1, 2, 0.357906
+not flipped, 3   , 2, 2, 0.193338
+not flipped, 3   , 4, 2, 0.153935
+not flipped, fast, 1, 0, 0.083153
+not flipped, fast, 2, 0, 0.092766
+not flipped, fast, 4, 0, 0.108608
+not flipped, fast, 1, 1, 0.090571
+not flipped, fast, 2, 1, 0.095401
+not flipped, fast, 4, 1, 0.109921
+not flipped, fast, 1, 2, 0.084634
+not flipped, fast, 2, 2, 0.094527
+not flipped, fast, 4, 2, 0.113525
+flipped    , 0   , 4, 0, 1.55222
+flipped    , 0   , 2, 0, 1.53867
+flipped    , 0   , 1, 0, 1.61392
+flipped    , 0   , 4, 1, 1.45005
+flipped    , 0   , 2, 1, 1.67202
+flipped    , 0   , 1, 1, 1.63653
+flipped    , 0   , 4, 2, 1.39319
+flipped    , 0   , 2, 2, 1.50798
+flipped    , 0   , 1, 2, 1.59656
+flipped    , 1   , 4, 0, 0.137879
+flipped    , 1   , 2, 0, 0.200722
+flipped    , 1   , 1, 0, 0.353715
+flipped    , 1   , 4, 1, 0.159829
+flipped    , 1   , 2, 1, 0.223325
+flipped    , 1   , 1, 1, 0.396398
+flipped    , 1   , 4, 2, 0.136866
+flipped    , 1   , 2, 2, 0.200033
+flipped    , 1   , 1, 2, 0.335879
+flipped    , 2   , 4, 0, 0.146758
+flipped    , 2   , 2, 0, 0.196029
+flipped    , 2   , 1, 0, 0.361461
+flipped    , 2   , 4, 1, 0.142927
+flipped    , 2   , 2, 1, 0.19828
+flipped    , 2   , 1, 1, 0.336629
+flipped    , 2   , 4, 2, 0.160314
+flipped    , 2   , 2, 2, 0.198941
+flipped    , 2   , 1, 2, 0.372234
+flipped    , 3   , 4, 0, 0.149188
+flipped    , 3   , 2, 0, 0.202393
+flipped    , 3   , 1, 0, 0.349841
+flipped    , 3   , 4, 1, 0.146115
+flipped    , 3   , 2, 1, 0.202454
+flipped    , 3   , 1, 1, 0.361192
+flipped    , 3   , 4, 2, 0.148885
+flipped    , 3   , 2, 2, 0.199159
+flipped    , 3   , 1, 2, 0.358661
+flipped    , fast, 4, 0, 0.11568
+flipped    , fast, 2, 0, 0.096055
+flipped    , fast, 1, 0, 0.097656
+flipped    , fast, 4, 1, 0.110849
+flipped    , fast, 2, 1, 0.101621
+flipped    , fast, 1, 1, 0.090978
+flipped    , fast, 4, 2, 0.104349
+flipped    , fast, 2, 2, 0.093408
+flipped    , fast, 1, 2, 0.087834
