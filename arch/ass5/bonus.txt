@@ -1,0 +1,45 @@
+I fucked up.
+
+\subsection*{Fully Associative Cache}
+
+In the fully associative cache, the entire address except for the byte offset is used as the key.
+Just like the last question, the least recently used address is replaced. This simplfies things, and
+for this problem, I will be showing the entire trace of the cache since it can be represented
+compactly.
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c|c|| c|c|c|c | c|c|c|c |c}
+Time & Address & \multicolumn{8}{c|}{Slot} & access\\
+&&0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+\hline
+ 0 & 200 & \e{200} &         &         &         &         &         &         &         & miss \\
+ 1 & 204 &     200 & \e{204} &         &         &         &         &         &         & miss \\
+ 2 & 208 &     200 &     204 & \e{208} &         &         &         &         &         & miss \\
+ 3 & 20C &     200 &     204 &     208 & \e{20C} &         &         &         &         & miss \\
+ 4 & 2F4 &     200 &     204 &     208 &     20C & \e{2F4} &         &         &         & miss \\
+ 5 & 2F0 &     200 &     204 &     208 &     20C &     2F4 & \e{2F0} &         &         & miss \\
+ 6 & 200 & \e{200} &     204 &     208 &     20C &     2F4 &     2F0 &         &         & hit  \\
+ 7 & 204 &     200 & \e{204} &     208 &     20C &     2F4 &     2F0 &         &         & hit  \\
+ 8 & 218 &     200 &     204 &     208 &     20C &     2F4 &     2F0 & \e{218} &         & miss \\
+ 9 & 21C &     200 &     204 &     208 &     20C &     2F4 &     2F0 &     218 & \e{21C} & miss \\
+10 & 24C &     200 &     204 & \e{24C} &     20C &     2F4 &     2F0 &     218 &     21C & miss*\\
+11 & 2F4 &     200 &     204 &     24C &     20C & \e{2F4} &     2F0 &     218 &     21C & hit  \\
+\hline
+12 & 200 & \e{200} &     204 &     24C &     20C &     2F4 &     2F0 &     218 &     21C & hit  \\
+13 & 204 &     200 & \e{204} &     24C &     20C &     2F4 &     2F0 &     218 &     21C & hit  \\
+14 & 208 &     200 &     204 &     24C &     20C &     2F4 & \e{208} &     218 &     21C & miss*\\
+15 & 20C &     200 &     204 &     24C & \e{20C} &     2F4 &     208 &     218 &     21C & hit  \\
+16 & 2F4 &     200 &     204 &     24C &     20C & \e{2F4} &     208 &     218 &     21C & hit  \\
+17 & 2F0 &     200 &     204 &     24C &     20C &     2F4 &     208 & \e{2F0} &     21C & hit  \\
+18 & 200 & \e{200} &     204 &     24C &     20C &     2F4 &     208 &     2F0 &     21C & hit  \\
+19 & 204 &     200 & \e{204} &     24C &     20C &     2F4 &     208 &     2F0 &     21C & hit  \\
+20 & 218 &     200 &     204 &     24C &     20C &     2F4 &     208 &     2F0 & \e{218} & hit  \\
+21 & 21C &     200 &     204 & \e{21C} &     20C &     2F4 &     208 &     2F0 &     218 & hit  \\
+22 & 24C &     200 &     204 &     21C &     20C &     2F4 &     208 &     2F0 &     218 & hit  \\
+23 & 2F4 &     200 &     204 &     21C &     20C &     2F4 &     208 &     2F0 &     218 & hit  \\
+\end{tabular}
+\caption{aww gee}
+\label{table:full}
+\end{table}

@@ -1,0 +1,242 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[margin=0.95in]{geometry}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{diagbox}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{listings}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{tikz}
+\graphicspath{ {./} }
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\usetikzlibrary{automata,positioning} % automata and positioning libraries are required to use nodes and coordinates in addition to placement propetries.
+%\usepackage{parskip}
+% equations coulde be %   default number of the equation on the rigth and equation centered 
+%   leqno number on the left and equation centered %   fleqn number on the rigth and  equation on the left side
+\newcommand{\solution}{ \noindent \textbf{Solution:}}
+\newcommand{\problem}[1]{\textit{#1} \medskip}
+
+% get rid of spacing after problem headers
+\usepackage{titlesec}
+%\titlespacing\subsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing{\subsection}{0pt}{*3}{-\parskip}
+
+\newcommand{\icol}[1]{% inline column vector
+  \left(\begin{smallmatrix}#1\end{smallmatrix}\right)%
+}
+
+\newcommand{\irow}[1]{% inline row vector
+  \begin{smallmatrix}(#1)\end{smallmatrix}%
+}
+
+\title{Combinatorial Optimization and Modern Heuristics: Simplex Mini-project}
+\author{
+	Max Williams\\
+    \textsc{Computer Science \& Engineering}\\
+	}
+
+\date{\today} 
+\begin{document}
+\maketitle
+
+
+\section{Problem Statement}
+
+\subsection{Formal Statement}
+
+% stating the LP problem using equations
+
+A linear programming problem is defined as a set of $n$ inequalities using $m$ variables and an
+objective function to be minimized or maximized that is a linear combination of the $m$ variables.
+Formally, we state the problem as
+
+\begin{equation*}
+\begin{array}{ll@{}ll}
+\text{min/maximize}  & \displaystyle\sum\limits_{j=1}^{m} c_{j}x_{j} &&\\
+\text{subject to}& \displaystyle\sum\limits_{j=1}^{n}  A_{j,i} & \geq b_j,  &i=1 ,..., m\\
+                 &                                                &x_{j} \geq 0, &j=1 ,..., n
+\end{array}
+\end{equation*}
+
+where $c_n$ is the nth coefficient of the objective functions, $b_n$ is the nth right hand side of
+each inequality, and $A_{m,n}$ are the coefficients of mth term of the nth inequality.
+
+\subsection{The Algorithm}
+
+To use the simplex algorithm, we need to rearrange the previous problem statement's inequalities
+into equalities by introducing $m$ slack variables.
+
+\begin{equation*}
+\begin{array}{ll@{}ll}
+\text{min/maximize}  & \displaystyle\sum\limits_{j=1}^{m} c_{j}x_{j} &&\\
+\text{subject to}& \displaystyle\sum\limits_{j=1}^{n}  A_{j,i} + s_i &= b_i ,  &i=1 ,..., m\\
+                 &                                                &x_{j} \geq 0, &j=1 ,..., n
+\end{array}
+\end{equation*}
+
+where $s_m$ is the mth slack variable. 
+
+High-level pseudocode for the simplex algorithm to solve this problem is here:
+
+\newcommand{\ass}{$\leftarrow\ $}
+
+\begin{algorithm}
+\caption{Simplex Algorithm}
+\begin{algorithmic}
+    \REQUIRE $A \in \mathbb{R}^{m\times n}, b \in \mathbb{R}^{m}, c \in \mathbb{R}^{n}$
+    \STATE {complete \ass false}
+    \WHILE{not complete}
+        \STATE pivot-col-found, pivot-col \ass find-pivot-col(A)
+        \IF{not pivot-col-found}
+            \STATE complete \ass true
+            \STATE RETURN A[:,-1]
+        \ENDIF
+        \STATE pivot-row-found, pivot-col \ass find-pivot-row(A, b)
+        \IF{not pivot-row-found}
+            \STATE ERROR solution not found
+        \ENDIF
+        \STATE{apply-pivot(A, b, pivot-row, pivot-col)}
+    \ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+% describing the Simplex algorithm in pseudocode and equations
+
+\subsection{Implementation}
+
+% describing the source of the Simplex code that you used, including its source code and simple
+% examples of how to use it (and on which platform)
+
+I used the \lstinline{linprog} solver from Scipy\footnote{\url{https://www.scipy.org/}}, which
+includes an option to use the simplex algorithm. Their simplex implementation can be found on
+Github
+\footnote{
+    \url{https://github.com/scipy/scipy/blob/master/scipy/optimize/\_linprog\_simplex.py}}.
+I created a Python script to generate linear programming problems, solve them using this solver, and
+record how long it takes to solve problems of various sizes. The results are recorded in Table
+\ref{table:time}, showing the average runtime over 10 runs for each (m,n) pair.
+
+Generating solvable LP problems from a given m and n was difficult, and I settled on filling A with
+random number from -5 to 5, with additional code to make about half of the values default to 1.
+Elements of b and c are all set to 1. This LP problem generation strategy is very inefficient when
+m is greater than n, as most of the generated LP problems are not solvable. Addressing this issue
+directly was outside of the scope of the project, and instead a trial and error method was used. If
+the solver terminated with failure, a new problem was generated until the solver succeeds. This may
+invalidate the timing results because it heavily biases the kinds of problems that the solver
+solves. The number of attempts to generate 10 valid LP problems is shown in Table \ref{table:tries}.
+
+
+\section{Experimental Results}
+
+% List the values of m, n, the problem instance statement, the system time needed for solving the LP
+% and the solution that you found for each of the above combination of m and n
+% Tabulate and graph the time versus m and n
+
+The following linear programming problem was given:
+
+\begin{equation}
+    \begin{array}{lcccccccc}
+        \text{min }        & x_1  &+& x_2   &+& x_3  &+& x_4 &\\
+    \text{subject to } & x_1  & +& 2x_2  &-&  x_3  &-& x_4 & = 1\\
+                      & -x_1 & -& 5x_2  &+& 2x_3 &+& 3x_4 & = 1\\
+                      &  && && x_i &\geq & 0\  \forall i       &
+\end{array}
+\end{equation}
+
+
+
+Which was converted to the following arrays, and found the solution, $x$. Solving it took 1.925 ms.
+
+\begin{align}
+    A &=
+    \begin{bmatrix}
+        1  &  2  & -1  & -1 \\
+        -1  & -5  &  2  &  3 
+    \end{bmatrix}\\
+    b^T &=
+    \begin{bmatrix}
+        1  &  1 
+    \end{bmatrix}\\
+    c &=
+    \begin{bmatrix}
+        1  &  1  &  1  &  1 
+    \end{bmatrix}\\
+    x^T &=
+    \begin{bmatrix}
+        2.0 &  0.0 &  0.0 &  1.0
+    \end{bmatrix}
+\end{align}
+
+
+The randomly generated problem statements, solutions, and individual run times are included in the
+addendum ``Linear Programming Problem Instances and Solutions''.
+
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l|rrrr}
+        \backslashbox{n}{m}
+        &2 & 6 & 10 & 14\\
+        \hline
+        4 &  1.547 & 2.198 & 1.829  &  2.256 \\
+        10 & 1.477 & 4.884 & 5.726  &  6.863 \\
+        20 & 1.631 & 5.602 & 8.634  & 15.813 \\
+        30 & 2.500 & 7.932 & 9.726  & 14.775 \\
+        40 & 2.464 & 7.472 & 11.317 & 16.587 \\
+        50 & 2.286 & 7.680 & 13.277 & 16.673
+    \end{tabular}
+    \caption{Average time in milliseconds to solve an LP problems for each m,n pair.}
+    \label{table:time}
+\end{table}
+
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l|rrrr}
+        \backslashbox{n}{m}
+        &2 & 6 & 10 & 14\\
+        \hline
+        4 & 11 & 98 & 820 & 16208 \\
+        10 & 10 & 11 & 334 & 8706 \\
+        20 & 10 & 10 & 13 & 96 \\
+        30 & 10 & 10 & 10 & 13 \\
+        40 & 10 & 10 & 10 & 10 \\
+        50 & 10 & 10 & 10 & 10
+    \end{tabular}
+    \caption{Number of attempts to generate 10 solveable LP problems for each m,n pair.}
+    \label{table:tries}
+\end{table}
+
+\section{Analysis}
+
+% An analysis of the results: what do you observe as the problem size and constraints vary, etc?
+
+Increasing $n$ and $m$ increases runtime, but not in a consistent way. I suspect this has to do with
+the inefficiency of the implementation and the randomness of the generated data. Increasing the
+number of constraints to be greater than or equal to the number of variables makes it very difficult
+to find solvable LP instances.
+
+\section{Conclusion}
+
+Although it has been superseded by the Interior Points algorithm, the Simplex algorithm is a simple
+local search algorithm which works well for smallish matrices and emerges naturally from the
+geometric interpretation of linear programming problems.
+
+
+\newpage
+\section{Code Listing}
+\lstinputlisting[caption={Code to generate and solve LP problems. Code for outputting tables is
+omitted.}, label={lst:solver}, basicstyle=\ttfamily\scriptsize, linerange={1-39}, language=Python, title=solver.py, ]{solver.py}
+
+\newpage
+\section{Linear Programming Problem Instances and Solutions}
+
+\tiny
+\verbatiminput{matrices.txt}
+
+
+\end{document}

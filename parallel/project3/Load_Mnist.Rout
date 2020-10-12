@@ -1,0 +1,72 @@
+
+R version 4.0.2 (2020-06-22) -- "Taking Off Again"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin17.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> #Load_mnist
+> # modification of https://gist.github.com/brendano/39760 :
+> #     Load the MNIST digit recognition dataset into R
+> #     http://yann.lecun.com/exdb/mnist/
+> #     assume you have all 4 files and gunzip'd them
+> #     creates train$n, train$x, train$y  and test$n, test$x, test$y
+> #     e.g. train$x is a 60000 x 784 matrix, each row is one digit (28x28)
+> #     call:  show_digit(train$x[5,])   to see a digit.
+> #     brendan o'connor - gist.github.com/39760 - anyall.org
+> #
+> # automatically obtains data from the web
+> # creates two data frames, test and train
+> # labels are stored in the y variables of each data frame
+> # can easily train many models using formula `y ~ .` syntax
+> 
+> #=====================================================================================
+> # Step 1 download MNIST files and unzip them in the current working directory
+> #        (use setwd (dir) to change the working directory)
+> #
+> 
+> # download data from http://yann.lecun.com/exdb/mnist/
+> download.file("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz",
++               "train-images-idx3-ubyte.gz")
+trying URL 'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz'
+Content type 'application/x-gzip' length 9912422 bytes (9.5 MB)
+==================================================
+downloaded 9.5 MB
+
+> download.file("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz",
++               "train-labels-idx1-ubyte.gz")
+trying URL 'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz'
+Content type 'application/x-gzip' length 28881 bytes (28 KB)
+==================================================
+downloaded 28 KB
+
+> download.file("http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz",
++               "t10k-images-idx3-ubyte.gz")
+trying URL 'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz'
+Content type 'application/x-gzip' length 1648877 bytes (1.6 MB)
+==================================================
+downloaded 1.6 MB
+
+> download.file("http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz",
++               "t10k-labels-idx1-ubyte.gz")
+trying URL 'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz'
+Content type 'application/x-gzip' length 4542 bytes
+==================================================
+downloaded 4542 bytes
+
+> 
+> library(R.utils)
+Error in library(R.utils) : there is no package called ‘R.utils’
+Execution halted

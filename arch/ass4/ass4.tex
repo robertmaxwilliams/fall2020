@@ -1,0 +1,109 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{preamble}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{enumitem}
+
+
+\newcommand\course{CSE 611}
+\newcommand\hwnumber{4}
+\newcommand\userID{Max Williams}
+
+\newcommand{\tf}[2]{\frac{\text{#1}}{\text{#2}}}
+
+\begin{document}
+
+\section*{Loop Performance}
+
+\subsection*{Introduction}
+
+Choosing the right loop order (or, equivalently, indexing strategy) affects performance greatly. The
+cache is able to read and store contiguous chunks of memory, and follows strategies that maximize
+performance for contiguous reads. In this paper, I evaluate the 6 different iteration orders for
+naive matrix multiplication. In Table \ref{table:perf}, the 6 different orders and their respective
+runtime for multiplying two $1000\times 1000$ matrices is listed for two compiler optimization
+levels.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l| r|r}
+        order & time (seconds) -O0 & time (seconds) -O3\\
+        \hline
+        i-j-k & 4.977  & 1.623\\
+        i-k-j & 21.557 & 21.919\\
+        k-i-j & 21.501 & 21.821\\
+        j-i-k & 7.025  & 2.108\\
+        k-j-i & 3.948  & 0.563\\
+        j-k-i & 3.907  & 0.368
+    \end{tabular}
+    \caption{Timings for all six orderings, for two optimization settings: -O0 and -O3.}
+    \label{table:perf}
+\end{table}
+
+\subsection*{Runtime Difficulty}
+
+The original problem statement called for $5000\times 5000$ matrices, but the program wouldn't
+terminate in a reasonable amount of time. This may have been due to the large size overflowing the
+largest cache. The program has $3\times 5000 \times 5000 = 75\times 10^6$ floats or 300 million
+bytes of memory, which is well below my 8 GB of RAM but still quite large compare to the cache size.
+Regardless of the cause, the array size needed to be reduced to $1000 \times 1000$.
+
+\subsection*{Best Performance}
+
+The \lstinline{j-k-i} ordering performed best, and \lstinline{k-j-i} performed almost identically.
+The thing to notice here is that both have \lstinline{i} as the innermost loop variable. Looking at
+the array access:
+
+\lstinline{C[i+j*N] += A[i+k*N] * B[k+j*N];}
+
+I see that \lstinline{i} only appears as a base index (not multiplied by anything). This means that
+within the innermost loop, \lstinline{j} and \lstinline{k} are constant and \lstinline{i} is used to
+access contiguous memory.
+
+\subsection*{Worst Performance}
+
+The orders \lstinline{i-k-j} and \lstinline{k-i-j} both have the worst performance. This is because
+they both have \lstinline{j} in their innermost loop, which is multiplied by N in the index for both
+B and C. This causes the largest number of cache misses, because single floats are being accessed
+from memory locations spaced out by 1000 floats. By the time it gets to the next iteration and
+\lstinline{j} is back at 0, those locations have already been taken out of cache and cause a cache
+miss.
+
+\subsection*{Middlest Performance}
+
+The order \lstinline{i-j-k} and \lstinline{j-i-k} both have middling performance. This is mostly due
+to \lstinline{k} being in the innermost loop, which only causes one spaced-out read in the innermost
+loop.
+
+\subsection*{Optimization Level}
+
+For the best performing loops, compiler optimization makes a big improvement, but for the worst
+performing loops, it actually makes them slightly worse. 
+
+\section*{Conclusion}
+
+Iteration order optimization can make a huge difference in performance - nearly sixty times in the
+most severe case. This means that when developing performance critical sections of code, careful
+consideration of iteration order should be made or experimental testing should be done.  Based on
+these results, I conclude that the following rule is useful when deciding iteration order: ``The
+innermost loop is most important, and having the innermost loop variable multiplied by anything will
+harm performance.'' 
+
+Of course, premature optimization should be avoided - profile before optimizing, and only optimize
+if it makes a difference for your product. Doing this kind of optimization can lead to code which is
+harder to read then putting your loops in their logical, intuitive order.
+
+
+\section*{Code Listing}
+
+\lstinputlisting{six-loops.c}
+
+
+
+
+
+\end{document}
