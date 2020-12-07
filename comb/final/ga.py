@@ -14,31 +14,6 @@ def survivors(genes, number_keep, fitness_fun):
     genes = [x for _, x in sorted(zip(fitnesss,genes), key=lambda pair: -pair[0])]
     return genes[:number_keep]
 
-def survivors_sharing(genes, number_keep, fitness_fun):
-    def share(dist):
-        # TODO tune?
-        delta = 5
-        alpha = 2
-        if dist < delta:
-            return 1 - (dist/delta)**alpha
-        else:
-            return 0
-    fitnesss = []
-    for i, gene in enumerate(genes):
-        prior_fitness = fitness_fun(gene)
-        summ = 0
-        for j, friend in enumerate(genes):
-            if i >= j:
-                continue
-            summ += share(graphs.gene_distance(gene, friend))
-        # avoid division by zero
-        if summ == 0:
-            summ = .1
-        
-        fitnesss.append(prior_fitness/summ)
-    genes = [x for _, x in sorted(zip(fitnesss,genes), key=lambda pair: -pair[0])]
-    return genes[:number_keep]
-
 def randchance(p):
     return random.random() > p
 
@@ -52,35 +27,6 @@ def mate_to_fill(genes, pop_limit, crossover_fun):
     assert(len(genes) + len(offspring) == pop_limit)
     return offspring
 
-def keep_best(a, b, fitness_fun):
-    if fitness_fun(a) >= fitness_fun(b):
-        return a
-    return b
-
-def deterministic_crowding(pop, crossover_fun, fitness_fun, mutation_fun, mutation_rate):
-    # crossover rate is not used
-    n = len(pop)
-    random.shuffle(pop)
-    new_pop = []
-    for a, b in zip(pop[:n//2], pop[n//2:]):
-        # TODO these are independant crossovers, properly they shoud be complimentary
-        c1 = crossover_fun(a, b)
-        c2 = crossover_fun(a, b)
-        
-        if randchance(mutation_rate):
-            c1 = mutation_fun(c1)
-        if randchance(mutation_rate):
-            c2 = mutation_fun(c2)
-            
-        d = graphs.gene_distance
-        if d(a, c1) + d(b, c2) <= d(a, c2) + d(b, c1):
-            new_pop.append(keep_best(a, c1, fitness_fun))
-            new_pop.append(keep_best(b, c2, fitness_fun))
-        else:
-            new_pop.append(keep_best(a, c2, fitness_fun))
-            new_pop.append(keep_best(b, c1, fitness_fun))
-    return new_pop
-    
 def mutate(pop, mutation_fun, mutation_rate):
     return [mutation_fun(x) if randchance(mutation_rate) else x for x in pop]
 
@@ -93,26 +39,12 @@ def one_iteration(pop, fitness_fun, crossover_fun, crossover_rate,
     size = len(pop)
     num_survive = int(size * (1 - crossover_rate/2))
     
-    if niching == None:
-        pop = survivors(pop, num_survive, fitness_fun)
-        kids = mate_to_fill(pop, size, crossover_fun)
-        kids = mutate(kids, mutation_fun, mutation_rate)
-        pop += kids
-        return pop
-    elif niching == 'sharing':
-        pop = survivors_sharing(pop, num_survive, fitness_fun)
-        kids = mate_to_fill(pop, size, crossover_fun)
-        kids = mutate(kids, mutation_fun, mutation_rate)
-        pop += kids
-        return pop
-    elif niching == 'crowding':
-        pop = deterministic_crowding(pop, crossover_fun, fitness_fun, mutation_fun, mutation_rate)
-        return pop
-    else:
-        raise Exception("oops wrong niching")
-    assert(len(pop) == size)
+    pop = survivors(pop, num_survive, fitness_fun)
+    kids = mate_to_fill(pop, size, crossover_fun)
+    kids = mutate(kids, mutation_fun, mutation_rate)
+    pop += kids
+    return pop
 
-    
 def max_avg_min(ls, fitness_fun):
     ls = [fitness_fun(x) for x in ls]
     return max(ls), sum(ls)/len(ls), min(ls)
@@ -187,7 +119,7 @@ def random_hillclimbing(start, neighbor_fun, fitness_fun, n_neighbors, n_iterati
 
 n_stats = 0
 
-for method_or_niching in ['hillclimbing', None, 'sharing', 'crowding']:
+for method_or_niching in ['hillclimbing', None]
     stats_list = []
     for i in range(2):
         if method_or_niching == 'hillclimbing':
