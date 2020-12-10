@@ -38,7 +38,7 @@ def one_iteration(pop, fitness_fun, crossover_fun, crossover_rate,
     '''
     size = len(pop)
     num_survive = int(size * (1 - crossover_rate/2))
-    
+
     pop = survivors(pop, num_survive, fitness_fun)
     kids = mate_to_fill(pop, size, crossover_fun)
     kids = mutate(kids, mutation_fun, mutation_rate)
@@ -47,20 +47,25 @@ def one_iteration(pop, fitness_fun, crossover_fun, crossover_rate,
 
 def max_avg_min(ls, fitness_fun):
     ls = [fitness_fun(x) for x in ls]
-    return max(ls), sum(ls)/len(ls), min(ls)
+    return [max(ls), sum(ls)/len(ls), min(ls)]
 
-def run_graphs(pop_size, mutation_rate, crossover_rate, verbose=False, niching=None):
+def run_graphs(pop_size, mutation_rate, crossover_rate, n_iterations):
     pop = [graphs.generate_gene(graphs.size) for _ in range(pop_size)]
     fitness_fun = graphs.fitness
     crossover_fun = graphs.crossover
     mutation_fun = graphs.mutate
     stats = []
-    for i in range(10):
+    for i in range(n_iterations):
+        if i%50 == 0:
+            print(i)
+
         stats.append(max_avg_min(pop, fitness_fun))
         pop = one_iteration(pop, fitness_fun, 
                             crossover_fun, crossover_rate,
                             mutation_fun, mutation_rate, 
-                            niching)
+                            None)
+        cur_best = pop[0] # a lot of assumption here
+        stats[-1].append(graphs.robustness(cur_best))
 
     best = max(pop, key=fitness_fun)
     graphs.visualize(best)
@@ -68,12 +73,13 @@ def run_graphs(pop_size, mutation_rate, crossover_rate, verbose=False, niching=N
 
 def plot_stats(stats_list):
     first_time = True
-    max_max = -10000
+    max_max = -math.inf
 
     for stats in stats_list:
         maxx = [x[0] for x in stats]
         avg = [x[1] for x in stats]
         minn = [x[2] for x in stats]
+        rob = [x[3] for x in stats]
         foo = max(maxx)
         if foo > max_max:
             max_max = foo
@@ -92,12 +98,16 @@ def plot_stats(stats_list):
             ax2 = ax1.twinx()
             ax3 = ax1.twinx()
             ax3.spines["right"].set_position(("axes", 1.2))
+            ax4 = ax1.twinx()
+            ax4.spines["right"].set_position(("axes", 1.4))
             
             first_time = False
 
         figg(ax1, minn, 'red', 'min', .3)
         figg(ax2, avg, 'blue', 'avg', .5)
         figg(ax3, maxx, 'green', 'maxx', .8)
+        figg(ax4, rob, 'orange', 'robustness', .4)
+        print('final robustness:', rob[-1])
 
     print('max max:', max_max)
     global n_stats
@@ -113,20 +123,20 @@ def random_hillclimbing(start, neighbor_fun, fitness_fun, n_neighbors, n_iterati
         neighbors += [best]
         stats.append(max_avg_min(neighbors, fitness_fun))
         best = max(neighbors, key=fitness_fun)
+        stats[-1].append(graphs.robustness(best))
     graphs.visualize(best)
-    print(best)
     return stats
 
 n_stats = 0
 
-for method_or_niching in ['hillclimbing', None]
+for method in ['hillclimbing', 'ga']:
     stats_list = []
     for i in range(2):
-        if method_or_niching == 'hillclimbing':
+        if method == 'hillclimbing':
             stats_list.append(random_hillclimbing(graphs.generate_gene(graphs.size), graphs.neighbor, 
-                graphs.fitness, 100, 100))
+                graphs.fitness, 100, 200))
         else:
-            stats_list.append(run_graphs(100, 0.001, 0.2, True, method_or_niching))
+            stats_list.append(run_graphs(100, 0.05, 0.3, 200))
     plot_stats(stats_list)
 
 

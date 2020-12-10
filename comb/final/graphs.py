@@ -7,6 +7,7 @@ import json
 
 import visualizer
 
+np.core.arrayprint._line_width = 190
 def randp():
     return random.randrange(2) == 0
 
@@ -104,7 +105,12 @@ def fitness(gene):
     #return robustness(gene) - sum_shortest_paths(gene)
     return -sum_shortest_paths(gene)
 
-def crossover(a, b, keep_both=False):
+def crossover(a, b):
+    noise = np.random.rand(size, size)
+    antinoise = np.ones((size, size)) - noise
+    return normalize_gene(a*noise + b*antinoise)
+
+def discreet_crossover(a, b, keep_both=False):
     n = a.shape[0]
     new1 = np.zeros((n,n))
     new2 = np.zeros((n,n))
@@ -120,7 +126,7 @@ def crossover(a, b, keep_both=False):
 def mutate(gene):
     n = gene.shape[0]
     new_gene = gene + np.random.rand(n, n) * 0.2
-    return new_gene
+    return normalize_gene(new_gene)
 
 def neighbor(gene):
     ''' apply hypersphere noise,
